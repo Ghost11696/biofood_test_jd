@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace biofood_test_jd.Controllers
 {
@@ -7,15 +8,16 @@ namespace biofood_test_jd.Controllers
     [Route("[controller]/[action]")]
     public class UserController : ControllerBase
     {
-        readonly string filePath = Directory.GetCurrentDirectory() + "\\users.json"; 
+        readonly string filePath = Directory.GetCurrentDirectory() + "\\users.json";
+        readonly string accessToken = "biofood_test_jd-TOKEN";
 
         [HttpGet]
-        //[Route("user/get")]
-        public IEnumerable<User> Get()
+        public ActionResult<IEnumerable<User>> Get()
         {
-            if (!System.IO.File.Exists(filePath))
+            string token = HttpContext.Request?.Headers["ADD-KEY"];
+            if (token != accessToken)
             {
-                System.IO.File.Create(filePath);
+                return Unauthorized();
             }
 
             var jsonData = System.IO.File.ReadAllText(filePath);
@@ -34,28 +36,15 @@ namespace biofood_test_jd.Controllers
            
         }
 
-        [HttpPost]
-        //[Route("user/post")]
-        public IActionResult Post(User user)
-        {
-            var jsonData = System.IO.File.ReadAllText(filePath);
-
-            var users = JsonConvert.DeserializeObject<List<User>>(jsonData)
-                      ?? new List<User>();
-
-            user.id = users.Count();
-
-            users.Add(user);
-
-            jsonData = JsonConvert.SerializeObject(users);
-            System.IO.File.WriteAllText(filePath, jsonData);
-
-            return Ok();
-        }
-
         [HttpDelete]
         public IActionResult Delete(int id)
         {
+            string token = HttpContext.Request?.Headers["ADD-KEY"];
+            if(token != accessToken)
+            {
+                return Unauthorized();
+            }
+
             var jsonData = System.IO.File.ReadAllText(filePath);
 
             var users = JsonConvert.DeserializeObject<List<User>>(jsonData)
@@ -68,5 +57,50 @@ namespace biofood_test_jd.Controllers
 
             return Ok();
         }
+
+
+        [HttpPost]
+        public IActionResult SignUp(User user)
+        {
+            var jsonData = System.IO.File.ReadAllText(filePath);
+
+            var users = new List<User>();
+            if (!string.IsNullOrWhiteSpace(jsonData))
+            {
+                users = JsonConvert.DeserializeObject<List<User>>(jsonData);                               
+
+                var newUser = users.FirstOrDefault(u => u?.firstname == user?.firstname
+                                        && u?.lastname == user?.lastname);
+
+                if (newUser != null) { return BadRequest("Existing User"); }
+
+                user.id = users.Last().id + 1;
+            }
+
+            users.Add(user);
+
+            jsonData = JsonConvert.SerializeObject(users);
+            System.IO.File.WriteAllText(filePath, jsonData);
+
+            return Ok();
+        }
+
+
+        [HttpPost]
+        public IActionResult SignIn(User user)
+        {
+            var jsonData = System.IO.File.ReadAllText(filePath);
+
+            var users = JsonConvert.DeserializeObject<List<User>>(jsonData)
+                      ?? new List<User>();
+
+            var authUser = users.FirstOrDefault(u => u?.firstname == user?.firstname
+                                    && u?.lastname == user?.lastname)?.id;
+
+            if (authUser == null) { return NotFound("User not found"); }
+
+            return Ok(new { authUser, accessToken });
+        }
+
     }
 }

@@ -1,4 +1,25 @@
-<h1>bidfood_test_jd</h1>
+<div id="app">
+  <nav class="navbar navbar-expand navbar-dark bg-dark">
+    <a href="#" class="navbar-brand">biofood_test_jd</a>
+    <ul class="navbar-nav mr-auto" routerLinkActive="active">
+      <li class="nav-item">
+        <a href="/home" class="nav-link" routerLink="home">Home </a>
+      </li>
+    </ul>
+    <ul class="navbar-nav ml-auto" *ngIf="!isLoggedIn">
+      <li class="nav-item">
+        <a href="/login" class="nav-link" routerLink="login">Log In</a>
+      </li>
+    </ul>
 
-  <app-users></app-users>
+    <ul class="navbar-nav ml-auto" *ngIf="isLoggedIn">
+      <li class="nav-item">
+        <a class="nav-link" (click)="logout()">Log Out</a>
+      </li>
+    </ul>
+  </nav>
 
+  <div class="container">
+    <router-outlet></router-outlet>
+  </div>
+</div>

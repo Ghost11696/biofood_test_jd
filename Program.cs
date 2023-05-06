@@ -1,3 +1,9 @@
+string filePath = Directory.GetCurrentDirectory() + "\\users.json";
+using (StreamWriter sw = new StreamWriter(filePath, true))
+{
+    sw.WriteLine();
+}
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -16,7 +22,6 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-
 
 app.MapControllerRoute(
     name: "default",

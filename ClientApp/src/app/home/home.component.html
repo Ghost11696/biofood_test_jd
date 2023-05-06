@@ -1,0 +1,99 @@
+<div class="container">
+
+  <div> <!--*ngIf="!isLoggedIn"-->
+    <h2>Register</h2>
+    <div class="form-group py-2">
+      <form [formGroup]="userForm" (ngSubmit)="onSubmit()" #f="ngForm">
+        <div class="row py-2">
+          <div class="col-3">
+            <input type="text" [(ngModel)]="firstname" id="firstname" required class="form-control" placeholder="First name:" formControlName="fname">
+            <div *ngIf="fname.invalid && (fname.dirty || fname.touched)" class="alert alert-danger">
+              <div *ngIf="fname.errors?.['required']">
+                First name is required.
+              </div>
+              <div *ngIf="fname.errors?.['minlength']">
+                First name must be at least 4 characters long.
+              </div>
+            </div>
+          </div>
+          <div class="col-3">
+            <input type="text" [(ngModel)]="lastname" id="lastname" required class="form-control" placeholder="Last name:" formControlName="lname">
+            <div *ngIf="lname.invalid && (lname.dirty || lname.touched)" class="alert alert-danger">
+              <div *ngIf="lname.errors?.['required']">
+                Last name is required.
+              </div>
+              <div *ngIf="lname.errors?.['minlength']">
+                Last name must be at least 4 characters long.
+              </div>
+            </div>
+          </div>
+          <div class="col-3">
+            <button type="submit" [disabled]="(fname.invalid || lname.invalid)" class="btn btn-primary">
+              Register
+            </button>
+          </div>
+        </div>
+        <div class="col-7">
+          <div class="alert alert-warning alert-dismissible fade show" *ngIf="f.submitted && isSignUpFailed">
+            Signup failed!<br />{{ errorMessage }}
+          </div>
+          <div class="alert alert-success alert-dismissible fade show" *ngIf="isSuccessful && !isLoggedIn">
+            Your registration is successful! Login to Continue
+          </div>
+          <div class="alert alert-success alert-dismissible fade show" *ngIf="isSuccessful && isLoggedIn">
+            Your registration is successful!
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div *ngIf="isLoggedIn">
+    <div class="row py-2">
+      <div class="col-8">
+        <input type="text" [(ngModel)]="usersearchterm" id="usersearchterm" class="form-control" (ngModelChange)="search($event)" placeholder="Search for User:">
+      </div>
+    </div>
+
+    <div class="row py-2">
+      <div class="col-8">
+
+        <div class="table table-responsive">
+          <table class="table table-striped" aria-labelledby="tableLabel">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Delete</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of users">
+                <td>{{ user.id }}</td>
+                <td>{{ user.firstname }}</td>
+                <td>{{ user.lastname }}</td>
+                <td>
+                  <div class="btn-toolbar" role="toolbar">
+                    <div class="btn-group me-2" role="group">
+                      <button type="button" class="btn btn-danger" title="delete user" (click)="delete(user)">
+                        Delete
+                      </button>
+                    </div>
+                    <div *ngIf="id == user.id">
+                      <div class="btn-group me-2" role="group">
+                        <button type="button" class="btn btn-primary" title="update user" (click)="update(user)">
+                          Update
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
