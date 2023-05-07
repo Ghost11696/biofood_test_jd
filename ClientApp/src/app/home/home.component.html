@@ -1,6 +1,7 @@
 <div class="container">
 
-  <div> <!--*ngIf="!isLoggedIn"-->
+  <div>
+    <!--*ngIf="!isLoggedIn"-->
     <h2>Register</h2>
     <div class="form-group py-2">
       <form [formGroup]="userForm" (ngSubmit)="onSubmit()" #f="ngForm">
@@ -76,14 +77,14 @@
                 <td>
                   <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group me-2" role="group">
-                      <button type="button" class="btn btn-danger" title="delete user" (click)="delete(user)">
+                      <button type="button" class="btn btn-danger" (click)="delete(user)" data-tooltip="test">
                         Delete
                       </button>
                     </div>
                     <div *ngIf="id == user.id">
                       <div class="btn-group me-2" role="group">
-                        <button type="button" class="btn btn-primary" title="update user" (click)="update(user)">
-                          Update
+                        <button type="button" class="btn btn-primary" (click)="onSelect(user)">
+                          Edit
                         </button>
                       </div>
                     </div>
@@ -94,6 +95,48 @@
           </table>
         </div>
       </div>
+    </div>
+    <div *ngIf="editUser != null">
+      <form [formGroup]="editForm">
+        <div class="row py-2">
+          <div class="col-3">
+            <input type="text" [(ngModel)]="id" id="id" required class="form-control" hidden formControlName="id">
+            <input type="text" [(ngModel)]="editfname" id="editfname" required class="form-control" placeholder="First name:" formControlName="efname">
+            <div *ngIf="efname.invalid && (efname.dirty || efname.touched)" class="alert alert-danger">
+              <div *ngIf="efname.errors?.['required']">
+                First name is required.
+              </div>
+              <div *ngIf="efname.errors?.['minlength']">
+                First name must be at least 4 characters long.
+              </div>
+            </div>
+          </div>
+          <div class="col-3">
+            <input type="text" [(ngModel)]="editlname" id="editlname" required class="form-control" placeholder="Last name:" formControlName="elname">
+            <div *ngIf="elname.invalid && (elname.dirty || elname.touched)" class="alert alert-danger">
+              <div *ngIf="elname.errors?.['required']">
+                Last name is required.
+              </div>
+              <div *ngIf="elname.errors?.['minlength']">
+                Last name must be at least 4 characters long.
+              </div>
+            </div>
+          </div>
+          <div class="col-3">
+            <button type="submit" [disabled]="(efname.invalid || elname.invalid)" class="btn btn-primary" (click)="update(id,editlname, editfname)">
+              Update
+            </button>
+          </div>
+        </div>
+        <div class="col-7">
+          <div class="alert alert-warning alert-dismissible fade show" *ngIf="f.submitted && isSignUpFailed">
+            Update failed!<br />{{ errorMessage }}
+          </div>
+          <div class="alert alert-success alert-dismissible fade show" *ngIf="isSuccessful && isLoggedIn">
+            Update successful!
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 </div>

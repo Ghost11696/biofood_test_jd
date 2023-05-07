@@ -12,6 +12,7 @@ import { HttpErrorHandler, HandleError } from '../http-error-handler.service';
 export class usersService {
   usersGetUrl = 'user/get'; 
   usersDeleteUrl = 'user/delete';
+  usersPutUrl = 'user/put';
   private handleError: HandleError;
 
   constructor(
@@ -51,13 +52,10 @@ export class usersService {
   }
 
   /** PUT: */
-  //updateUser(user: User): Observable<User> {
-  //  httpOptions.headers =
-  //    httpOptions.headers.set('Authorization', 'my-new-auth-token');
-
-  //  return this.http.put<User>(this.usersPostUrl, user, httpOptions)
-  //    .pipe(
-  //      catchError(this.handleError('updateUser', user))
-  //    );
-  //}
+  updateUser(user: User): Observable<User> {
+    return this.http.put<User>(this.usersPutUrl, user)
+      .pipe(
+        catchError(this.handleError('updateUser', user))
+      );
+  }
 }

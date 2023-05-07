@@ -49,8 +49,44 @@ namespace biofood_test_jd.Controllers
 
             var users = JsonConvert.DeserializeObject<List<User>>(jsonData)
                       ?? new List<User>();
+            
+            var deleteUser = users.FirstOrDefault(u => u.id == id);
+            if (deleteUser!= null)
+            {
+                users.Remove(deleteUser);
+            }            
 
-            users.RemoveAt(id);
+            jsonData = JsonConvert.SerializeObject(users);
+            System.IO.File.WriteAllText(filePath, jsonData);
+
+            return Ok();
+        }
+
+        [HttpPut]
+        public IActionResult Put(User user)
+        {
+            string token = HttpContext.Request?.Headers["ADD-KEY"];
+            if (token != accessToken)
+            {
+                return Unauthorized();
+            }
+
+            var jsonData = System.IO.File.ReadAllText(filePath);
+
+            var users = JsonConvert.DeserializeObject<List<User>>(jsonData)
+                      ?? new List<User>();
+
+            var existingUser = users.FirstOrDefault(u => u?.firstname == user?.firstname
+                                    && u?.lastname == user?.lastname);
+
+            if (existingUser != null) { return BadRequest("Existing User"); }
+
+            var oldUser = users.FirstOrDefault(x=>x.id == user.id);
+            if(oldUser != null)
+            {
+                users.Remove(oldUser);
+                users.Add(user);
+            }
 
             jsonData = JsonConvert.SerializeObject(users);
             System.IO.File.WriteAllText(filePath, jsonData);
@@ -74,10 +110,10 @@ namespace biofood_test_jd.Controllers
 
                 if (newUser != null) { return BadRequest("Existing User"); }
 
-                user.id = users.Last().id + 1;
+                user.id = users.Count() == 0 ? 1 : users.Last().id + 1;
+                users.Add(user);
             }
 
-            users.Add(user);
 
             jsonData = JsonConvert.SerializeObject(users);
             System.IO.File.WriteAllText(filePath, jsonData);

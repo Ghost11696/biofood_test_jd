@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { User } from '../model/user';
@@ -18,22 +18,18 @@ export class HomeComponent implements OnInit {
   editUser: User | undefined; // the user currently being edited
   firstname = '';
   lastname = '';
+  editfname = '';
+  editlname = '';
   usersearchterm = '';
   isSuccessful = false;
   isSignUpFailed = false;
   isLoggedIn = false;
   errorMessage = '';
   userForm!: FormGroup;
+  editForm!: FormGroup;
   id!: number;
 
   constructor(private homeServices: usersService, private authService: AuthService, private tokenStorage: TokenStorageService, private router: Router) { }
-
-  @ViewChild('userEditInput')
-  set userEditInput(element: ElementRef<HTMLInputElement>) {
-    if (element) {
-      element.nativeElement.focus();
-    }
-  }
 
   ngOnInit() {
     this.isLoggedIn = !!this.tokenStorage.getToken();
@@ -51,8 +47,20 @@ export class HomeComponent implements OnInit {
         Validators.required,
         Validators.minLength(4)
       ])
+    });
 
-    })
+    this.editForm = new FormGroup({
+      id: new FormControl(''),
+      efname: new FormControl(this.firstname, [
+        Validators.required,
+        Validators.minLength(4)
+      ]),
+      elname: new FormControl(this.lastname, [
+        Validators.required,
+        Validators.minLength(4)
+      ])
+    });
+
   }
 
   getUsers(): void {
@@ -60,11 +68,16 @@ export class HomeComponent implements OnInit {
       .subscribe((users) => (this.users = users));
   }
 
+  onSelect(user: User): void {
+    this.editUser = user;
+  }
+
   delete(user: User): void {    
     this.users = this.users.filter((h) => h !== user);
     this.homeServices.deleteUser(user.id).subscribe();
     if (user.id == this.id) {
       this.tokenStorage.signOut();
+      window.location.reload();
     }
   }
 
@@ -101,18 +114,16 @@ export class HomeComponent implements OnInit {
 
   get lname() { return this.userForm.get('lname')!; }
 
-  update(user: User) {
-    //if (firstname && this.editUser && (this.editUser.firstname !== this.userfirstname)) {
-    //  this.usersService
-    //    .updateUser({ ...this.editUser,firstname})
-    //    .subscribe(user => {
-    //    // replace the hero in the users list with update from server
-    //      const ix = user ? this.users.findIndex(h => h.firstname === firstname) : -1;
-    //    if (ix > -1) {
-    //      this.users[ix] = user;
-    //    }
-    //  });
-    //  this.editUser = undefined;
-    //}
-  }
+  get efname() { return this.editForm.get('efname')!; }
+
+  get elname() { return this.editForm.get('elname')!; }
+
+  update(id: number, efname: string, elname: string) {
+    this.editUser = { id: id, firstname: efname, lastname: elname }
+    this.homeServices.updateUser(this.editUser).subscribe(
+      data => {
+        this.editUser = undefined;
+        this.getUsers();
+      });
+    }
 }
