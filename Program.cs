@@ -1,7 +1,7 @@
 string filePath = Directory.GetCurrentDirectory() + "\\users.json";
 using (StreamWriter sw = new StreamWriter(filePath, true))
 {
-    sw.WriteLine();
+    sw.WriteLine("[]");
 }
 
 var builder = WebApplication.CreateBuilder(args);

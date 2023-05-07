@@ -137,6 +137,5 @@ namespace biofood_test_jd.Controllers
 
             return Ok(new { authUser, accessToken });
         }
-
-    }
+    }    
 }

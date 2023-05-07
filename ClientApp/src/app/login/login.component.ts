@@ -57,6 +57,11 @@ export class LoginComponent {
     );
   }
 
+  onLogOut(): void {
+    this.tokenStorage.signOut();
+    this.router.navigate(['/', 'home']);
+  }
+
   get fname() { return this.loginForm.get('fname')!; }
 
   get lname() { return this.loginForm.get('lname')!; }

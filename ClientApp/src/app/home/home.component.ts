@@ -72,6 +72,10 @@ export class HomeComponent implements OnInit {
     this.editUser = user;
   }
 
+  onCancel(user: User): void {
+    this.editUser = undefined;
+  }
+
   delete(user: User): void {    
     this.users = this.users.filter((h) => h !== user);
     this.homeServices.deleteUser(user.id).subscribe();
@@ -125,5 +129,7 @@ export class HomeComponent implements OnInit {
         this.editUser = undefined;
         this.getUsers();
       });
-    }
+    this.editUser = undefined;
+  }
+
 }

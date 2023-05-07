@@ -39,7 +39,7 @@
             Signup failed!<br />{{ errorMessage }}
           </div>
           <div class="alert alert-success alert-dismissible fade show" *ngIf="isSuccessful && !isLoggedIn">
-            Your registration is successful! Login to Continue
+            Your registration is successful! Login to Register more users
           </div>
           <div class="alert alert-success alert-dismissible fade show" *ngIf="isSuccessful && isLoggedIn">
             Your registration is successful!
@@ -58,7 +58,6 @@
 
     <div class="row py-2">
       <div class="col-8">
-
         <div class="table table-responsive">
           <table class="table table-striped" aria-labelledby="tableLabel">
             <thead>
@@ -75,17 +74,24 @@
                 <td>{{ user.firstname }}</td>
                 <td>{{ user.lastname }}</td>
                 <td>
+                  <div *ngIf="editUser != null && id == user.id">
+                    <button type="button" class="btn btn-warning" (click)="onCancel(user)">
+                      Cancel
+                    </button>
+                  </div>
+                  <div *ngIf="editUser == null">
                   <div class="btn-toolbar" role="toolbar">
-                    <div class="btn-group me-2" role="group">
-                      <button type="button" class="btn btn-danger" (click)="delete(user)" data-tooltip="test">
-                        Delete
-                      </button>
-                    </div>
-                    <div *ngIf="id == user.id">
                       <div class="btn-group me-2" role="group">
-                        <button type="button" class="btn btn-primary" (click)="onSelect(user)">
-                          Edit
+                        <button type="button" class="btn btn-danger" (click)="delete(user)">
+                          Delete
                         </button>
+                      </div>
+                      <div *ngIf="id == user.id">
+                        <div class="btn-group me-2" role="group">
+                          <button type="button" class="btn btn-primary" (click)="onSelect(user)">
+                            Edit
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -96,6 +102,7 @@
         </div>
       </div>
     </div>
+
     <div *ngIf="editUser != null">
       <form [formGroup]="editForm">
         <div class="row py-2">
