@@ -5,7 +5,6 @@ import { User } from '../model/user';
 import { usersService } from './home.service';
 import { AuthService } from '../auth.service';
 import { TokenStorageService } from '../token-storage.service';
-import { Router } from '@angular/router';
 
 
 @Component({
@@ -20,6 +19,7 @@ export class HomeComponent implements OnInit {
   lastname = '';
   editfname = '';
   editlname = '';
+  bodyText = 'This text can be updated in modal 1';
   usersearchterm = '';
   isSuccessful = false;
   isSignUpFailed = false;
@@ -29,13 +29,16 @@ export class HomeComponent implements OnInit {
   editForm!: FormGroup;
   id!: number;
 
-  constructor(private homeServices: usersService, private authService: AuthService, private tokenStorage: TokenStorageService, private router: Router) { }
+  constructor(
+    private homeServices: usersService,
+    private authService: AuthService,
+    private tokenStorage: TokenStorageService) { }
 
   ngOnInit() {
     this.isLoggedIn = !!this.tokenStorage.getToken();
     if (this.isLoggedIn) {
       this.getUsers();
-      this.id = this.tokenStorage.getId();
+      this.id = this.tokenStorage.getId();      
     }
     
     this.userForm = new FormGroup({
@@ -76,7 +79,7 @@ export class HomeComponent implements OnInit {
     this.editUser = undefined;
   }
 
-  delete(user: User): void {    
+  delete(user: User): void {
     this.users = this.users.filter((h) => h !== user);
     this.homeServices.deleteUser(user.id).subscribe();
     if (user.id == this.id) {
