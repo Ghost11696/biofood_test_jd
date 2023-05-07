@@ -45,7 +45,12 @@
     </div>
   </div>
   <div *ngIf="isLoggedIn">
-    Logout from User:  {{ firstname }}
+    <div class="row py-2">
+      <div class="col-4">
+        Currently Logged in
+      </div>
+    </div>
+    <div class="col-4">
     <button class="btn btn-primary" (click)="onLogOut()">
       Log out
     </button>
